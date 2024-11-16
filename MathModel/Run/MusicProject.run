@@ -1,0 +1,17 @@
+#reset;
+#option knitro_options 'maxtime = 1800';
+#option solver knitro;
+#option solver cplexamp;
+#option gurobi_options 'timelim=600 outlev=1'; 
+#option cplex_options 'timelimit=28000 mipdisplay=2 threads=0';
+
+option baron_options 'maxtime = 1800';
+option solver baron;
+
+#model NLP-Model.mod;
+#data MusicProject240-1.dat;
+
+solve;
+
+#display Objective, Y, YPrime;
+display _ampl_time, _total_solve_time, P, Objective;
