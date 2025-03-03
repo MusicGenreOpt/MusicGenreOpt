@@ -4,7 +4,7 @@ This repository implements mathematical models and algorithms for the music genr
 
 ## Abstract
 
-With the rise of music streaming services and the vast variety of songs available, automated tools for music classification are increasingly important. This project proposes an optimization-based ensemble approach to automatic music genre classification, leveraging heterogeneity across multiple segments of a song. Each song is divided into disjoint segments, and segment-specific genre classification probabilities are computed. The optimization algorithms then determine the optimal set of weights to combine these probabilities into an aggregated class probability for the entire song. Using a publicly available dataset, the proposed algorithms are compared to simple and complex ensemble methods. The results show that our solutions increase classification accuracy by approximately 3-6% compared to simple benchmarks and decrease accuracy by 2.33% compared to complex ensemble benchmarks. Our methods offer a good balance between model accuracy and interpretability and perform well in multi-genre classification tasks.
+With the rise of music streaming services and the vast variety of songs available, automated tools for music classification are increasingly important. This project proposes an optimization-based ensemble approach to automatic music genre classification, leveraging heterogeneity across multiple segments of a song. Each song is divided into disjoint segments, and segment-specific genre classification probabilities are computed. The optimization algorithms then determine the optimal set of weights to combine these probabilities into an aggregated class probability for the entire song. Using a publicly available dataset, the proposed algorithms are compared to simple and complex ensemble methods. The results show that our solutions increase classification accuracy by approximately 3-6% compared to simple benchmarks and decrease accuracy by 2.33% compared to complex ensemble benchmarks. Our methods offer a good balance between model accuracy and interpretability and perform well in multi-genre classification tasks.
 
 ## Repository Structure
 
@@ -116,7 +116,7 @@ Contributions are welcome! Please fork the repository and use a feature branch. 
 
 ## License
 
-This project is licensed under the MIT License. See the `LICENSE` file for details.
+This project is licensed under the MIT License. See the `LICENSE` file for details.
 
 ## Acknowledgments
 
