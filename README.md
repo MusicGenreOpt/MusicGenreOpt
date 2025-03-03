@@ -25,10 +25,10 @@ With the rise of music streaming services and the vast variety of songs availabl
 
 ### Prerequisites
 
-- AMPL (A Mathematical Programming Language)
-- Python 3.x
-- Jupyter Notebook
-- Machine learning libraries: scikit-learn, pandas, numpy
+- AMPL (A Mathematical Programming Language)
+- Python 3.x
+- Jupyter Notebook
+- Machine learning libraries: scikit-learn, pandas, numpy
 
 ### Installation
 
@@ -108,11 +108,11 @@ With the rise of music streaming services and the vast variety of songs availabl
 
 ## Results
 
-The optimization-based ensemble methods developed in this project have demonstrated improved classification accuracy compared to simple ensemble methods and competitive performance relative to complex ensembles. These methods offer a balance between accuracy and interpretability, making them valuable for practical applications in music genre classification.
+The optimization-based ensemble methods developed in this project have demonstrated improved classification accuracy compared to simple ensemble methods and competitive performance relative to complex ensembles. These methods offer a balance between accuracy and interpretability, making them valuable for practical applications in music genre classification.
 
 ## Contributing
 
-Contributions are welcome! Please fork the repository and use a feature branch. Pull requests should be submitted against the `main` branch.
+Contributions are welcome! Please fork the repository and use a feature branch. Pull requests should be submitted against the `main` branch.
 
 ## License
 
