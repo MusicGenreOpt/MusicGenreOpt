@@ -8,7 +8,7 @@ With the rise of music streaming services and the vast variety of songs availabl
 
 ## Repository Structure
 
-- **MathModel/**: Contains the mathematical modeling files for the optimization approach.
+- **MathModel/**: Contains the mathematical modeling files for the optimization approach.
   - **Run/**:
     - `MusicProject.run`: Script to execute the optimization model using solvers like KNITRO, CPLEX, GUROBI, or BARON. 
   - **Model/**:
@@ -16,8 +16,8 @@ With the rise of music streaming services and the vast variety of songs availabl
   - **Data/**:
     - Contains datasets used in the optimization models.
 
-- **Algo/**: Comprises the algorithmic implementations for music genre classification.
-  - `Music_Genre Classification - Models.ipynb`: Jupyter notebook detailing the development and evaluation of machine learning models for genre classification.
+- **Algo/**: Comprises the algorithmic implementations for music genre classification.
+  - `Music_Genre Classification - Models.ipynb`: Jupyter notebook detailing the development and evaluation of machine learning models for genre classification.
   - **Data/**:
     - `FoldData.txt`: Lists the datasets used, possibly indicating cross-validation folds or data splits. 
 
