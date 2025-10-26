@@ -20,7 +20,8 @@ With the rise of music streaming services and the vast variety of songs availabl
   - `Music_Genre Classification - Models.ipynb`: Jupyter notebook detailing the development and evaluation of machine learning models for genre classification.
   - **Data/**:
     - `FoldData.txt`: Lists the datasets used, possibly indicating cross-validation folds or data splits. 
-
+  - **RecentModels/**: Contains the latest used benchmark algorithms.
+      
 ## Getting Started
 
 ### Prerequisites
