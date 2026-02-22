@@ -1,17 +1,129 @@
-#reset;
-#option knitro_options 'maxtime = 1800';
-#option solver knitro;
-#option solver cplexamp;
-#option gurobi_options 'timelim=600 outlev=1'; 
-#option cplex_options 'timelimit=28000 mipdisplay=2 threads=0';
+###############################################################################
+# AMPL RUN SCRIPT
+# Model file: MILP.mod
+#
+# This run script is structured for reproducible computational experiments:
+#   (i)   Load a single dataset (default: MusicProject240-1.dat),
+#   (ii)  solve the NLP model using BARON,
+#   (iii) report solve timing and key outputs,
+#   (iv)  provide optional diagnostics and batch execution template.
+#
+###############################################################################
 
-option baron_options 'maxtime = 1800';
+reset;
+
+###############################################################################
+# 1) SOLVER CONFIGURATION (Primary: BARON)
+###############################################################################
+
 option solver baron;
 
-#model NLP-Model.mod;
-#data MusicProject240-1.dat;
+# BARON controls:
+#   maxtime: maximum runtime in seconds (BARON)
+option baron_options 'maxtime=1800';
+
+# --- Alternative solvers (optional; keep commented) ---
+# option solver knitro;
+# option knitro_options 'maxtime=1800';
+#
+# option solver cplexamp;
+# option cplex_options 'timelimit=1800 mipdisplay=2 threads=0';
+#
+# option solver gurobi;
+# option gurobi_options 'timelim=1800 outlev=1 threads=0';
+
+
+###############################################################################
+# 2) MODEL AND DATA LOADING
+###############################################################################
+
+model NLP.mod;
+
+# Single dataset execution (edit as needed):
+data MusicProject240-1.dat;
+
+
+###############################################################################
+# 3) OPTIMIZATION
+###############################################################################
 
 solve;
 
-#display Objective, Y, YPrime;
-display _ampl_time, _total_solve_time, P, Objective;
+
+###############################################################################
+# 4) PERFORMANCE REPORTING (Timing and Objective)
+###############################################################################
+
+# _ampl_time: AMPL script execution time
+# _total_solve_time: time spent inside the solver call
+display _ampl_time, _total_solve_time;
+
+# Objective value as defined in NLP.mod
+display Objective;
+
+
+###############################################################################
+# 5) CORE INPUTS / DECISION VARIABLES
+###############################################################################
+
+# P is a PARAMETER in NLP.mod (i.e., fixed input, not optimized).
+# Displaying it is useful to document the experimental setup.
+display P;
+
+# Y is the computed score per (song, genre) based on P and X.
+display Y;
+
+# YPrime is binary in the current NLP.mod:
+display YPrime;
+
+# t[s]:
+display t;
+
+# r[s]:
+display r;
+
+
+###############################################################################
+# 6) COMPACT REPORTING (Optional: Preferred for Large Instances)
+###############################################################################
+
+# Show aggregated summaries:
+
+# (S1) Per-song maximum over genres:
+display {s in song} (max {g in genre} Y[s,g]);
+
+# (S2) Summary statistics for P (helps with reporting):
+display { } (min {p in part} P[p]);
+display { } (max {p in part} P[p]);
+
+
+###############################################################################
+# 7) OPTIONAL: BATCH EXECUTION OVER MULTIPLE DATASETS (Commented)
+###############################################################################
+# Uncomment to run sequentially:
+#   MusicProject240-1.dat ... MusicProject240-5.dat
+#
+# Output is intentionally kept concise for batch execution.
+###############################################################################
+
+# for {k in 1..5} {
+#     reset data;
+#     data ("MusicProject240-" & k & ".dat");
+#
+#     solve;
+#
+#     printf "\n============================================================\n";
+#     printf "Instance: MusicProject240-%d.dat\n", k;
+#     printf "AMPL time        : %g\n", _ampl_time;
+#     printf "Solve time       : %g\n", _total_solve_time;
+#     printf "Objective        : %g\n", Objective;
+#     printf "max_s max_g Y[s,g]: %g\n", max {s in song} (max {g in genre} Y[s,g]);
+#     printf "============================================================\n\n";
+#
+#     display { } (min {p in part} P[p]);
+#     display { } (max {p in part} P[p]);
+# }
+
+###############################################################################
+# End of script
+###############################################################################
