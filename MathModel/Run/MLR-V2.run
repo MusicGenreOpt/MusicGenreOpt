@@ -1,21 +1,61 @@
+###############################################################################
+# MLR-V2.run
+# ---------------------------------------------------------------------------
+# Run file:
+# - Primary solver: BARON (MINLP due to binary z + exp/log terms)
+# - Single data file by default
+# - Optional loop for multiple datasets is provided at the end
+###############################################################################
+
 #reset;
-#option baron_options 'ma_maxtime_real = 300 outlev=1 epsa=0 prfreq=50 filter';
 
-#option presolve 0; # disable AMPL presolve, this is mandatory!
-#option knitro_options 'leastsquares=1 presolve=0 alg=2 bar_maxcrossit=2 outlev=1 mip_relaxable=0'; # Enable Knitro LSQ
-option knitro_options 'mip_maxtime_real=26000 outlev=1 mip_relaxable=0'; 
+# --- Optional solver blocks (commented) ---
+# option knitro_options 'maxtime = 1800 outlev=1 mip_relaxable=0';
+# option solver knitro;
 
-#option solver baron; 
-option solver knitro;
-#option solver minos;
-#option solver conopt;
-#option minlp_options 'eps=1.0e-6 rho=100';
-#option solver scip;
+# option solver cplexamp;
+# option cplex_options 'timelimit=1800 mipdisplay=2 threads=0';
 
-#option solver cplexamp;
-#option gurobi_options 'timelim=600 outlev=1'; 
-#option cplex_options 'timelimit=28000 mipdisplay=2 threads=0';
+# option solver gurobi;
+# option gurobi_options 'timelim=1800 outlev=1 threads=0';
+
+# --- Primary solver: BARON ---
+option baron_options 'maxtime = 1800 outlev=1';
+option solver baron;
+
+# Model + data
+model MLR-v2.mod;
+data MusicProject240-1.dat;
 
 solve;
-#, (sum{s in song} (r[s]))
-display Objective, n, w, b, z;
+
+# Key outputs
+display _ampl_time, _total_solve_time, Objective;
+
+# Feature selection decision
+display z;
+
+# Coefficients and bias (can be large)
+display w, b;
+
+# Compact summary: number of selected features
+display (sum {f in feature} z[f]);
+
+###############################################################################
+# OPTIONAL: loop over 5 datasets (commented)
+###############################################################################
+# for {k in 1..5} {
+#     reset data;
+#     data ("MusicProject240-" & k & ".dat");
+#     solve;
+#
+#     printf "\n==============================\n";
+#     printf "Dataset: MusicProject240-%d.dat\n", k;
+#     printf "AMPL time: %g\n", _ampl_time;
+#     printf "Solve time: %g\n", _total_solve_time;
+#     printf "Objective: %g\n", Objective;
+#     printf "Selected features: %g\n", sum {f in feature} z[f];
+#     printf "==============================\n\n";
+#
+#     display z;
+# }
