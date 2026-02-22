@@ -1,17 +1,174 @@
-#reset;
-#option knitro_options 'maxtime = 1800';
-#option solver knitro;
-#option solver cplexamp;
-#option gurobi_options 'timelim=600 outlev=1'; 
-#option cplex_options 'timelimit=28000 mipdisplay=2 threads=0';
+###############################################################################
+# AMPL RUN SCRIPT
+# Model file: MILP.mod
+#
+# This script is designed for reproducible computational experiments:
+#   (i)  It loads one dataset (by default: MusicProject240-1.dat)
+#   (ii) solves the MILP using Gurobi
+#   (iii) reports solver/AMPL timing and core decision outputs
+#   (iv) performs basic post-solve validation checks
+#
+# Notes on output volume:
+#   - Full matrix displays (Y, YPrime) can be very large for realistic instances
+#   - Therefore, the script provides both (a) full displays and (b) compact interpretable summaries
+###############################################################################
 
-option baron_options 'maxtime = 1800';
-option solver baron;
+reset;
 
-#model NLP-Model.mod;
-#data MusicProject240-1.dat;
+###############################################################################
+# 1) SOLVER CONFIGURATION (Primary: GUROBI)
+###############################################################################
+
+option solver gurobi;
+
+# Recommended Gurobi controls for academic benchmarking:
+#   timelim : time limit in seconds
+#   outlev  : verbosity (0 silent, 1 standard, higher for more detail)
+#   threads : 0 lets the solver decide; set explicit value for controlled runs
+#   mipgap  : relative optimality gap tolerance (optional; e.g., 0.001)
+option gurobi_options 'timelim=1800 outlev=1 threads=0';
+
+# --- Alternative solvers ---
+# option solver cplexamp;
+# option cplex_options 'timelimit=1800 mipdisplay=2 threads=0';
+#
+# option solver knitro;
+# option knitro_options 'maxtime=1800';
+#
+# option solver baron;
+# option baron_options 'maxtime=1800';
+
+
+###############################################################################
+# 2) MODEL AND DATA LOADING
+###############################################################################
+
+# Model file name as requested:
+model MILP.mod;
+
+# Single dataset execution (update file name as needed):
+data MusicProject240-1.dat;
+
+
+###############################################################################
+# 3) OPTIMIZATION
+###############################################################################
 
 solve;
 
-#display Objective, Y, YPrime;
-display _ampl_time, _total_solve_time, P, Objective;
+
+###############################################################################
+# 4) PERFORMANCE REPORTING (Timing and Objective)
+###############################################################################
+
+# AMPL internal timing vs. end-to-end solve time:
+display _ampl_time, _total_solve_time;
+
+# Objective value:
+#   The model is formulated as: minimize (nSong - sum_s r[s]).
+#   Hence, minimizing Objective is equivalent to maximizing sum_s r[s].
+display Objective;
+
+# Equivalent reward summary (often more interpretable than Objective):
+display { } (sum {s in SONG} r[s]);
+
+
+###############################################################################
+# 5) CORE DECISION OUTPUTS
+###############################################################################
+
+# Part weights (primary continuous decisions):
+display P;
+
+# Sum of weights: informative if your model enforces normalization.
+# If normalization is not enforced, interpret this quantity accordingly.
+display { } (sum {p in PART} P[p]);
+
+# Per-song reward contribution:
+display r;
+
+# The max-score proxy variable:
+display t;
+
+
+###############################################################################
+# 6) ASSIGNMENT OUTPUTS
+###############################################################################
+# YPrime[s,g] is the one-hot genre selection. This can be very large.
+# Keep enabled for full assignment matrices; otherwise use the compact summary.
+
+display YPrime;
+
+# Y[s,g] are the weighted genre scores. Also typically very large.
+display Y;
+
+
+###############################################################################
+# 7) POST-SOLVE VALIDATION CHECKS (Recommended)
+###############################################################################
+# These checks support experimental integrity (debugging and reporting).
+
+# (V1) One-hot assignment verification: sum_g YPrime[s,g] must equal 1 for all s.
+display {s in SONG} (sum {g in GENRE} YPrime[s,g]);
+
+# (V2) Consistency between t[s] and the score of the selected genre:
+# selected_Y[s] = sum_g YPrime[s,g]*Y[s,g]
+# Ideally, t[s] - selected_Y[s] is ~ 0 (within numerical tolerance).
+display {s in SONG} (t[s] - sum {g in GENRE} (YPrime[s,g] * Y[s,g]));
+
+# (V3) Consistency between t[s] and the maximum over genres:
+# t[s] should equal max_g Y[s,g] (within tolerance).
+display {s in SONG} (t[s] - max {g in GENRE} Y[s,g]);
+
+# (V4) Reward mapping check:
+# r[s] must equal the Actual score of the selected genre.
+display {s in SONG} (r[s] - sum {g in GENRE} (YPrime[s,g] * Actual[s,g]));
+
+
+###############################################################################
+# 8) INTERPRETABLE SUMMARY (Optional but Recommended for Reporting)
+###############################################################################
+# Genre identifier per song (works because YPrime is one-hot):
+# chosen_genre[s] = sum_g g * YPrime[s,g]
+display {s in SONG} (sum {g in GENRE} (g * YPrime[s,g]));
+
+# Score of the chosen genre:
+display {s in SONG} (sum {g in GENRE} (YPrime[s,g] * Y[s,g]));
+
+# Actual score of the chosen genre (equals r[s]):
+display {s in SONG} (sum {g in GENRE} (YPrime[s,g] * Actual[s,g]));
+
+
+###############################################################################
+# 9) OPTIONAL: BATCH EXECUTION OVER MULTIPLE DATASETS
+###############################################################################
+# Uncomment the following block to run 5 datasets sequentially:
+#   MusicProject240-1.dat ... MusicProject240-5.dat
+#
+# Rationale:
+#   - Enables controlled comparative experiments across instances.
+#   - Restricts output to key summaries to avoid excessively large logs.
+###############################################################################
+
+# for {k in 1..5} {
+#     reset data;
+#     data ("MusicProject240-" & k & ".dat");
+#
+#     solve;
+#
+#     printf "\n============================================================\n";
+#     printf "Instance: MusicProject240-%d.dat\n", k;
+#     printf "AMPL time           : %g\n", _ampl_time;
+#     printf "Total solve time    : %g\n", _total_solve_time;
+#     printf "Objective (min)     : %g\n", Objective;
+#     printf "Total reward sum(r) : %g\n", sum {s in SONG} r[s];
+#     printf "============================================================\n\n";
+#
+#     # Minimal, high-value outputs for batch runs:
+#     display P;
+#     display { } (sum {s in SONG} r[s]);
+# }
+
+###############################################################################
+# End of script
+###############################################################################
