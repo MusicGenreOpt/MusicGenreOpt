@@ -8,9 +8,6 @@
 #   (iii) reports solver/AMPL timing and core decision outputs
 #   (iv) performs basic post-solve validation checks
 #
-# Notes on output volume:
-#   - Full matrix displays (Y, YPrime) can be very large for realistic instances
-#   - Therefore, the script provides both (a) full displays and (b) compact interpretable summaries
 ###############################################################################
 
 reset;
@@ -172,3 +169,4 @@ display {s in SONG} (sum {g in GENRE} (YPrime[s,g] * Actual[s,g]));
 ###############################################################################
 # End of script
 ###############################################################################
+
